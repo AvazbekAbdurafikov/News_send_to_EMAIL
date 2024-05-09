@@ -1,16 +1,22 @@
 import requests
 from sent_eamil import send_mail
-url = ("https://newsapi.org/v2/everything?q=tesla&from="
-       "2024-04-09&sortBy=publishedAt&apiKey=f07773d8e3"
-       "c74e0e8eb3f4c475906bc6")
+
+topic = "tesla"
+language = "ru"
+url = (f"https://newsapi.org/v2/everything?q={topic}&"
+       f"from=2024-04-09&"
+       f"sortBy=publishedAt&"
+       f"apiKey=f07773d8e3c74e0e8eb3f4c475906bc6&"
+       f"language={language}")
 
 api = "f07773d8e3c74e0e8eb3f4c475906bc6"
 response = requests.get(url)
 news = ""
 data = response.json()
-for i in data['articles']:
-    if i["title"] is not None:
-        news = f"{news} \n {i['title']} \n {i['description']} + \n\n "
+for i in data['articles'][:20]:
+    if i["title"] and i["description"] is not None:
+        news = ("Subject:Today`s news" + "\n" + news + i['title'] + "\n" + "\n" + i['description'] + "\n" + i["url"] +
+                 2*"\n")
 
 news = news.encode("utf-8")
 send_mail(message=news)
